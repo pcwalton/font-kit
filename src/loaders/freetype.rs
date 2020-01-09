@@ -42,6 +42,7 @@ use crate::error::{FontLoadingError, GlyphLoadingError};
 use crate::file_type::FileType;
 use crate::handle::Handle;
 use crate::hinting::HintingOptions;
+use crate::id::{FontId, OPENTYPE_TABLE_TAG_HEAD};
 use crate::loader::{FallbackResult, FontTransform, Loader};
 use crate::metrics::Metrics;
 use crate::properties::{Properties, Stretch, Style, Weight};
@@ -335,6 +336,17 @@ impl Font {
     /// Returns true if and only if the font is monospace (fixed-width).
     pub fn is_monospace(&self) -> bool {
         unsafe { (*self.freetype_face).face_flags & (FT_FACE_FLAG_FIXED_WIDTH as FT_Long) != 0 }
+    }
+
+    /// Returns a unique ID for the font.
+    pub fn id(&self) -> FontId {
+        let (font_name, name_is_postscript_name) = match self.postscript_name() {
+            Some(font_name) => (font_name, true),
+            None => (self.full_name(), false),
+        };
+        // FIXME(pcwalton): If this isn't an OpenType font, return nothing here.
+        let head_table_data = self.load_font_table(OPENTYPE_TABLE_TAG_HEAD).unwrap();
+        FontId::from_opentype_head_table(font_name, &*head_table_data, name_is_postscript_name)
     }
 
     /// Returns the values of various font properties, corresponding to those defined in CSS.
@@ -1016,6 +1028,11 @@ impl Loader for Font {
     }
 
     #[inline]
+    fn id(&self) -> FontId {
+        self.id()
+    }
+
+    #[inline]
     fn postscript_name(&self) -> Option<String> {
         self.postscript_name()
     }
@@ -1149,6 +1166,8 @@ unsafe fn reset_freetype_face_char_size(face: FT_Face) {
         );
     }
 }
+
+// Extra FFI types missing from the `freetype` crate
 
 #[repr(C)]
 struct FT_SfntName {

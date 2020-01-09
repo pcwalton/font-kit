@@ -600,7 +600,6 @@ impl Font {
             self.dwrite_font.stretch(),
         );
         let valid_len = convert_len_utf16_to_utf8(text, fallback_result.mapped_length);
-        //let face = fallback_result.mapped_font.
         let fonts = if let Some(dwrite_font) = fallback_result.mapped_font {
             let dwrite_font_face = dwrite_font.create_font_face();
             let font = Font {

@@ -123,6 +123,8 @@
 #![warn(missing_copy_implementations)]
 
 #[macro_use]
+extern crate bitflags;
+#[macro_use]
 extern crate log;
 
 pub mod canvas;
@@ -134,6 +136,7 @@ pub mod file_type;
 pub mod font;
 pub mod handle;
 pub mod hinting;
+pub mod id;
 pub mod loader;
 pub mod loaders;
 pub mod metrics;

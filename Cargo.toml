@@ -17,7 +17,9 @@ source-fontconfig = ["servo-fontconfig"]
 source-fontconfig-default = ["source-fontconfig"]
 
 [dependencies]
+bitflags = "1"
 byteorder = "1.2"
+crc = "1"
 euclid = "0.20"
 float-ord = "0.2"
 lazy_static = "1.0"

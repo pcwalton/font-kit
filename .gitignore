@@ -3,3 +3,4 @@
 Cargo.lock
 /c/build
 /c/target
+.vscode
